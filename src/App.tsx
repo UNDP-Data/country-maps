@@ -1,24 +1,55 @@
-import undpLogo from './assets/undp-logo-blue.svg';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { csv, json } from 'd3-fetch';
+import { useEffect, useState } from 'react';
+import { MpiDataTypeNational, BboxDataType } from './Types';
+
+import { CountryMaps } from './CountryMaps';
 
 function App() {
+  const [nationalData, setNationalData] = useState<
+    MpiDataTypeNational[] | undefined
+  >(undefined);
+  useEffect(() => {
+    Promise.all([
+      csv('./data/MPI_national.csv'),
+      json(
+        'https://gist.githubusercontent.com/cplpearce/3bc5f1e9b1187df51d2085ffca795bee/raw/b36904c0c8ea72fdb82f68eb33f29891095deab3/country_codes',
+      ),
+    ]).then(([national, countries]) => {
+      // eslint-disable-next-line no-console
+      console.log('national--------------', national);
+      const countriesKeys = Object.keys(countries as object);
+      const countriesArray: { iso_a3: string; boundingBox: BboxDataType }[] =
+        [];
+      countriesKeys.forEach((key: string) => {
+        countriesArray.push({
+          iso_a3: (countries as any)[key]['alpha-3'],
+          boundingBox: (countries as any)[key].boundingBox,
+        });
+      });
+      const nationalFetched = national.map((d: any) => ({
+        country: d.country,
+        iso_a3: d['country code'],
+        region: '',
+        mpi: d.MPI,
+        headcountRatio: d['Headcount Ratio (H, %)'],
+        year: d.Year,
+        intensity: +d['Intensity (A, %)'],
+        bbox: countriesArray[
+          (countriesArray as object[]).findIndex(
+            (k: any) => k.iso_a3 === d['country code'],
+          )
+        ].boundingBox,
+      }));
+      setNationalData(nationalFetched);
+    });
+  }, []);
   return (
-    <div className='undp-container flex-div flex-wrap flex-hor-align-center margin-top-13 margin-bottom-13'>
-      <div>
-        <img
-          src={undpLogo}
-          className='logo react'
-          alt='React logo'
-          width='72px'
-          style={{ margin: 'auto' }}
-        />
-      </div>
-      <h3
-        className='undp-typography'
-        style={{ textAlign: 'center', width: '100%' }}
-      >
-        This is template for building visualization and frontend project for
-        UNDP Data Futures Platform
-      </h3>
+    <div
+      className='undp-container'
+      style={{ maxWidth: '1280px', margin: 'auto' }}
+    >
+      {nationalData ? <CountryMaps national={nationalData} /> : null}
     </div>
   );
 }
