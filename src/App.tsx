@@ -16,8 +16,6 @@ function App() {
         'https://gist.githubusercontent.com/cplpearce/3bc5f1e9b1187df51d2085ffca795bee/raw/b36904c0c8ea72fdb82f68eb33f29891095deab3/country_codes',
       ),
     ]).then(([national, countries]) => {
-      // eslint-disable-next-line no-console
-      console.log('national--------------', national);
       const countriesKeys = Object.keys(countries as object);
       const countriesArray: { iso_a3: string; boundingBox: BboxDataType }[] =
         [];
@@ -30,11 +28,6 @@ function App() {
       const nationalFetched = national.map((d: any) => ({
         country: d.country,
         iso_a3: d['country code'],
-        region: '',
-        mpi: d.MPI,
-        headcountRatio: d['Headcount Ratio (H, %)'],
-        year: d.Year,
-        intensity: +d['Intensity (A, %)'],
         bbox: countriesArray[
           (countriesArray as object[]).findIndex(
             (k: any) => k.iso_a3 === d['country code'],

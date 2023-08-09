@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styled from 'styled-components';
-import { HoverSubnatDataType } from '../Types';
+import { format } from 'd3-format';
+import { TooltipData } from '../Types';
 
 interface Props {
-  data: HoverSubnatDataType;
+  data: TooltipData;
 }
 
 interface TooltipElProps {
@@ -73,28 +75,21 @@ export function TooltipSubnational(props: Props) {
           padding: 'var(--spacing-05) var(--spacing-05) 0 var(--spacing-05)',
         }}
       >
-        {data.value === 0 ? (
-          'no data available for this country'
-        ) : (
-          <>
-            <div>
-              <span className='tooltipLabel'>MPI: </span>
-              <span className='tooltipValue'>{data.value.toFixed(3)}</span>
-            </div>
-            <div>
-              <span className='tooltipLabel'>Headcount Ratio: </span>
-              <span className='tooltipValue'>
-                {data.headcountRatio?.toFixed(2)}%
-              </span>
-            </div>
-            <div>
-              <span className='tooltipLabel'>Intensity: </span>
-              <span className='tooltipValue'>
-                {data.intensity?.toFixed(2)}%
-              </span>
-            </div>
-          </>
-        )}
+        {data.values.map((d: any, i: number) => (
+          <div key={i} style={{ fontSize: '0.875rem' }}>
+            <span>{d.title}</span>
+            <span style={{ fontWeight: '700' }}>
+              {!d.value
+                ? 'NA'
+                : d.unit === '%'
+                ? d.value.toFixed(1)
+                : d.value > 1
+                ? format('.3s')(d.value).replace('G', 'B')
+                : d.value}
+              {d.unit}
+            </span>
+          </div>
+        ))}
       </div>
     </TooltipEl>
   );

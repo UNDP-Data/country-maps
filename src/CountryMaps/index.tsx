@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Select } from 'antd';
+import { Select, Radio, RadioChangeEvent } from 'antd';
 import { useEffect, useState } from 'react';
 import { MpiDataTypeNational } from '../Types';
 import { CountryMap } from './CountryMap';
@@ -15,9 +14,10 @@ export function CountryMaps(props: Props) {
     MpiDataTypeNational | undefined
   >(undefined);
 
-  const defaultCountry = 'Afghanistan';
+  const defaultCountry = 'Nigeria';
   const [selectedCountry, setSelectedCountry] =
     useState<string>(defaultCountry);
+  const [mapSource, setMapSource] = useState<string>('mpiData');
   useEffect(() => {
     setCountryData(
       national.filter(
@@ -45,7 +45,23 @@ export function CountryMaps(props: Props) {
           ))}
         </Select>
       </div>
-      {national ? <CountryMap countryData={countryData} /> : null}
+      <div>
+        <Radio.Group
+          defaultValue='mpiData'
+          onChange={(el: RadioChangeEvent) => setMapSource(el.target.value)}
+          className='margin-bottom-05'
+        >
+          <Radio className='undp-radio' value='mpiData'>
+            MPI
+          </Radio>
+          <Radio className='undp-radio' value='electricityData'>
+            Electricity Access
+          </Radio>
+        </Radio.Group>
+      </div>
+      {national ? (
+        <CountryMap countryData={countryData} mapSource={mapSource} />
+      ) : null}
     </div>
   );
 }
