@@ -28,6 +28,7 @@ function App() {
       const nationalFetched = national.map((d: any) => ({
         country: d.country,
         iso_a3: d['country code'],
+        adminLevel: d.admin,
         bbox: countriesArray[
           (countriesArray as object[]).findIndex(
             (k: any) => k.iso_a3 === d['country code'],

@@ -11,6 +11,7 @@ export interface BboxDataType {
 export interface MpiDataTypeNational {
   country: string;
   iso_a3: string;
+  adminLevel: number;
   bbox: BboxDataType;
 }
 

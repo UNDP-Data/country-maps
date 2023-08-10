@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
 import { useEffect, useRef, useState } from 'react';
 import maplibreGl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -22,6 +21,7 @@ export function CountryMap(props: Props) {
   let lon = 0;
   const [hoverData, setHoverData] = useState<null | TooltipData>(null);
   const country = countryData ? countryData.country : 'Afghanistan';
+  const adminLevel = countryData ? countryData.adminLevel : 1;
   useEffect(() => {
     if (
       countryData !== undefined &&
@@ -71,7 +71,7 @@ export function CountryMap(props: Props) {
             type: 'fill',
             source: 'mpiData',
             'source-layer': 'adm_Export_jso_FeaturesToJSO',
-            /* filter: ['==', 'admin level', selectedAdminLevel], */
+            filter: ['==', 'admin level', adminLevel],
             paint: {
               'fill-color': [
                 'interpolate',
@@ -114,6 +114,7 @@ export function CountryMap(props: Props) {
             type: 'fill',
             source: 'mpiData',
             'source-layer': 'adm_Export_jso_FeaturesToJSO',
+            filter: ['==', 'admin level', adminLevel],
             paint: {
               'fill-color': '#000',
               'fill-opacity': [
@@ -373,7 +374,7 @@ export function CountryMap(props: Props) {
         const filters = [
           'all',
           ['==', 'country', countryData?.country],
-          /* ['==', 'admin level', selectedAdminLevel], */
+          ['==', 'admin level', adminLevel],
         ];
         (map as any).current.setFilter('mpiChoropleth', filters);
         (map as any).current.setFilter('mpiOverlay', filters);
